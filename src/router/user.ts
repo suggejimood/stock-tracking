@@ -50,24 +50,31 @@ router.get('/profile/:id', async (req, res) => {
 });
 
 router.put('/update_profile', async (req, res) => {
-    const { name, surname } = req.body;
+    const { name, surname, email } = req.body;
     const id = jwtID(req);
 
-    if(name == null || surname == null){
-        throw new BadRequestError('Name or surname can not be null');
+    if(name == null || surname == null || email == null){
+        throw new BadRequestError('Name, email or surname can not be null');
     }
     
+    const existingUser = await UserModel.findOne({email});
+
+    if(existingUser){
+        throw new AlreadyExistError('This email ');
+    }
+
     const user = await UserModel.findByIdAndUpdate(id, {name, surname});
 
     if(!user){
         throw new BadRequestError("User can not found or can not update!");
     }
 
+    
     res.status(200).json(user);
 });
 
 router.put('/update_user_profile', async (req, res) => {
-    const { id, name, surname } = req.body;
+    const { id, name, surname, email } = req.body;
 
     const user = await UserModel.findByIdAndUpdate(id, { name, surname });
 

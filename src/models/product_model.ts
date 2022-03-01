@@ -40,6 +40,6 @@ const productSchema = new Schema<ProductDoc>({
     }
 });
 
-const ProductModel = model<ProductDoc>('User', productSchema);
+const ProductModel = model<ProductDoc>('Product', productSchema);
 
 export { ProductModel };

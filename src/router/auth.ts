@@ -1,20 +1,21 @@
 import express from 'express';
 import { UserModel } from '../models/user_model';
 import jwt from 'jsonwebtoken';
+import { NotFoundError } from '../errors/not_found_error';
 
 const router = express.Router();
 
-router.post('login', async (req, res)=>{
+router.post('/login', async (req, res)=>{
     const { email, password } = req.body;
 
     const user = await UserModel.findOne(email);
 
     if(!user){
-        throw new Error('E-mail or password is wrong!');
+        throw new NotFoundError();
     }
 
     if(password != user.password){
-        throw new Error('E-mail or password is wrong!');
+        throw new NotFoundError()
     }
 
     const prd = {
@@ -27,7 +28,7 @@ router.post('login', async (req, res)=>{
     res.status(200).json({msg: true});
 });
 
-router.get('logout', (req, res) => {
+router.get('/logout', (req, res) => {
     const token = '';
 
     res.header('token', token);
