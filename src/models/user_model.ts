@@ -1,11 +1,22 @@
 import { Schema, model } from "mongoose";
 
+class User{
+    public email: string;
+    public id: string;
+
+    constructor(email: string, id: string){
+        this.email = email;
+        this.id = id;
+    }
+}
+
 interface UserDoc extends Document{
     name: string;
     surname: string;
     email: string;
     password: string;
-    department: string;
+    department: number;
+    companyId: string;
 }
 
 const userSchema = new Schema<UserDoc>({
@@ -27,10 +38,14 @@ const userSchema = new Schema<UserDoc>({
         required: true 
     },
     department: {
-        type: String,
+        type: Number,
     },
+    companyId: {
+        type: String,
+        required: true,
+    }
 });
 
 const UserModel = model<UserDoc>('User', userSchema);
 
-export { UserModel };
+export { UserModel, User };

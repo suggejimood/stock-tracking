@@ -17,7 +17,7 @@ const verify = async (req: Request, res: Response, next: NextFunction) => {
         throw new JWTisnotValid();
     }
 
-    const newToken = jwt.sign({id}, `${process.env.KEY}`);
+    const newToken = jwt.sign({id}, `${process.env.KEY}`, {expiresIn: '1d'});
     res.header('token', newToken);
 
     next();

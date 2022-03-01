@@ -1,5 +1,15 @@
 import { Schema, model } from "mongoose";
 
+class Product{
+    public id: string;
+    public name: string;
+
+    constructor(id: string, name: string){
+        this.id = id;
+        this.name = name;
+    }
+}
+
 interface ProductDoc extends Document{
     name: string;
     number: number;
@@ -42,4 +52,4 @@ const productSchema = new Schema<ProductDoc>({
 
 const ProductModel = model<ProductDoc>('Product', productSchema);
 
-export { ProductModel };
+export { ProductModel, Product };
