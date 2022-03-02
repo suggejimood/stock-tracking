@@ -12,6 +12,7 @@ class Product{
 
 interface ProductDoc extends Document{
     name: string;
+    companyID: string,
     number: number;
     barcodeNumber: string;
     buyingPrice: number;
@@ -22,6 +23,10 @@ interface ProductDoc extends Document{
 const productSchema = new Schema<ProductDoc>({
     name: { 
         type: String, 
+        required: true
+    },
+    companyID: {
+        type: String,
         required: true
     },
     number:{

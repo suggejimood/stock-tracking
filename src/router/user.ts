@@ -9,6 +9,7 @@ import { jwtAdmin } from '../middlewares/jwt_permission';
 
 const router = express.Router();
 
+
 router.post('/add_new_user', jwtAdmin, async (req, res) => {
     const id = await jwtID(req);
     const { name, surname, email, department, password } = req.body;
