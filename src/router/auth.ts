@@ -39,6 +39,12 @@ router.get('/logout', (req, res) => {
 
 router.post('/register', async (req, res) => {
     const { name, surname, email, password, companyName, } = req.body;
+    
+    const existingEmail = await UserModel.findOne({email});
+
+    if(existingEmail){
+        throw new Error('This email has been used before');
+    }
 
     const existingCompany = await CompanyModel.findOne({companyName});
 
@@ -58,12 +64,6 @@ router.post('/register', async (req, res) => {
         department: 0,
         companyId: company._id,
     };
-
-    const existingEmail = await UserModel.findOne(email);
-
-    if(existingEmail){
-        throw new Error('This email has been used before');
-    }
 
     const user = await new UserModel(newUser);
     await user.save();
