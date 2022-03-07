@@ -14,7 +14,7 @@ router.post('/add_new_user', jwtAdmin, async (req, res) => {
     const id = await jwtID(req);
     const { name, surname, email, department, password } = req.body;
 
-    const existingEmail = await UserModel.findOne(email);
+    const existingEmail = await UserModel.findOne({email});
 
     if(existingEmail){
         throw new AlreadyExistError("This email already using");
@@ -47,8 +47,7 @@ router.post('/add_new_user', jwtAdmin, async (req, res) => {
     let users = company.users;
     const _user = new User(user.email, `${user._id}`);
     users.push(_user);
-    company.updateOne({users: users});
-
+    await company.updateOne({users: users});
 
     res.status(200).json(user);
 });

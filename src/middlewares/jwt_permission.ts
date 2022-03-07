@@ -36,7 +36,24 @@ const jwtSaleandMarketing = async (req: Request, res: Response, next: NextFuncti
     next();
 };
 
+const jwtAccountant = async (req: Request, res: Response, next: NextFunction) => {
+    const id = await jwtID(req);
+
+    const user = await UserModel.findById(id);
+
+    if(!user){
+        throw new UnauthorizedError();
+    }
+
+    if(user.department != 2 as Number || user.department != 0 as Number){
+        throw new BadRequestError("You dont have permision");
+    }
+
+    next();
+};
+
 export { 
     jwtAdmin,
     jwtSaleandMarketing,
+    jwtAccountant
  };

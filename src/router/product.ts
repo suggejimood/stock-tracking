@@ -58,6 +58,10 @@ router.put('/update_stock', jwtSaleandMarketing, async (req, res) => {
         throw new BadRequestError('Product can not found!');
     }
 
+    if(number < 0){
+        throw new BadRequestError('Product number can not be negative number');
+    }
+
     if(`${product._id}` != user.companyId){
         throw new NotFoundError();
     }

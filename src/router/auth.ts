@@ -4,13 +4,14 @@ import jwt from 'jsonwebtoken';
 import { NotFoundError } from '../errors/not_found_error';
 import { CompanyModel } from '../models/company_model';
 import { AlreadyExistError } from '../errors/already_exist_error';
+import { FinanceModel } from '../models/finance_model';
 
 const router = express.Router();
 
 router.post('/login', async (req, res)=>{
     const { email, password } = req.body;
 
-    const user = await UserModel.findOne(email);
+    const user = await UserModel.findOne({email});
 
     if(!user){
         throw new NotFoundError();
@@ -39,14 +40,14 @@ router.get('/logout', (req, res) => {
 
 router.post('/register', async (req, res) => {
     const { name, surname, email, password, companyName, } = req.body;
-    
+
     const existingEmail = await UserModel.findOne({email});
 
     if(existingEmail){
-        throw new Error('This email has been used before');
+        throw new AlreadyExistError('This email has been used before');
     }
 
-    const existingCompany = await CompanyModel.findOne({companyName});
+    const existingCompany = await CompanyModel.findOne({name: companyName});
 
     if(existingCompany){
         throw new AlreadyExistError('This company has been used before');
@@ -68,13 +69,21 @@ router.post('/register', async (req, res) => {
     const user = await new UserModel(newUser);
     await user.save();
 
+    const newFinance = {
+        companyId: company._id,
+        totalMoney: 0
+    };
+
+    const finance = await new FinanceModel(newFinance);
+    finance.save();
+
     let users = [];
     const _user = await new User(user.email, `${user._id}`);
     users.push(_user);
 
     await company.updateOne({users: users});
 
-    res.status(200).json({user, company});
+    res.status(200).json({user, company, finance});
 });
 
 export { router as authRouter };

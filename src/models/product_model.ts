@@ -17,7 +17,6 @@ interface ProductDoc extends Document{
     barcodeNumber: string;
     buyingPrice: number;
     saleingPrice: number;
-    moneyType: string;
 }
 
 const productSchema = new Schema<ProductDoc>({
@@ -49,12 +48,8 @@ const productSchema = new Schema<ProductDoc>({
         required: true,
         min: 0
     },
-    moneyType: {
-        type: String,
-        required: true
-    }
 });
 
-const ProductModel = model<ProductDoc>('Product', productSchema);
+const ProductModel = model<ProductDoc>('product', productSchema);
 
 export { ProductModel, Product };

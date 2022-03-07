@@ -11,6 +11,7 @@ import { connectDB } from "./config/database/database";
 import { userRouter } from './router/user';
 import { productRouter } from './router/product';
 import { authRouter } from './router/auth';
+import { financeRouter } from './router/finance';
 
 const app = express();
 app.use(express.json());
@@ -23,6 +24,7 @@ app.use('/api', verify);
 app.use('/auth', authRouter);
 app.use('/api', userRouter);
 app.use('/api', productRouter);
+app.use('/api', financeRouter)
 
 //404
 app.all('*', (req, res)=>{

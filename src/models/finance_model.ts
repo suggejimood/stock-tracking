@@ -13,11 +13,12 @@ const financeSchema = new Schema<FinanceDoc>({
     },
     totalMoney: {
         type: Number,
+        default: 0,
         min: 0,
         required: true
     }
 });
 
-const FinanceModel = model<FinanceDoc>('Company', financeSchema);
+const FinanceModel = model<FinanceDoc>('finance', financeSchema);
 
 export { FinanceModel };
