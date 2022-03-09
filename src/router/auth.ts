@@ -1,6 +1,6 @@
 import express from 'express';
-import { User, UserModel } from '../models/user_model';
 import jwt from 'jsonwebtoken';
+import { User, UserModel } from '../models/user_model';
 import { NotFoundError } from '../errors/not_found_error';
 import { CompanyModel } from '../models/company_model';
 import { AlreadyExistError } from '../errors/already_exist_error';

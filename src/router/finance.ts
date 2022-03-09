@@ -77,7 +77,22 @@ router.post('/sell/:id', jwtSaleandMarketing, async (req, res) => {
     const stock = product.number - number;
     await product.updateOne({number: stock});
 
-    res.status(200).json(product);
+    let earnMoney = number * product.saleingPrice;
+    let speadingMoney = number * product.buyingPrice;
+
+    let profit = earnMoney - speadingMoney;
+
+    const finance = await FinanceModel.findOne({companyId: company._id});
+
+    if(!finance){
+        throw new BadRequestError('Finance table can not found');
+    }
+
+    profit = profit + finance.totalMoney;
+
+    await finance.updateOne({totalMoney: profit});
+
+    res.status(200).json({bill: earnMoney});
 });
 
 export { router as financeRouter };
