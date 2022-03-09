@@ -1,10 +1,12 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { AlreadyExistError } from '../errors/already_exist_error';
 import { BadRequestError } from '../errors/bad_request_error';
 import { JWTisnotValid } from '../errors/jwt_isNotValid_error';
 import { NotFoundError } from '../errors/not_found_error';
 import { UnauthorizedError } from '../errors/unauthorized_error';
 import { jwtSaleandMarketing } from '../middlewares/jwt_permission';
+import { validateRequest } from '../middlewares/validate_request';
+import { validateAddNewUser } from '../middlewares/validation_middleware';
 import { CompanyModel } from '../models/company_model';
 import { Product, ProductModel } from '../models/product_model';
 import { UserModel } from '../models/user_model';
@@ -12,7 +14,7 @@ import { jwtID } from '../services/jwt_parser';
 
 const router = express.Router();
 
-router.post('/add_new_product', jwtSaleandMarketing, async (req, res) => {
+router.post('/add_new_product', validateAddNewUser(), validateRequest, jwtSaleandMarketing, async (req: Request, res: Response) => {
     const { name, number, barcodeNumber, buyingPrice, saleingPrice } = req.body;
     
     const id = await jwtID(req);
@@ -95,7 +97,7 @@ router.delete('/delete_product', jwtSaleandMarketing, async (req, res) => {
 });
 
 router.put('/update_stock', jwtSaleandMarketing, async (req, res) => {
-    const { id, number } = req.body;
+    const { barcode, number } = req.body;
 
     const userID = await jwtID(req);
     const user = await UserModel.findById(userID);
@@ -104,7 +106,7 @@ router.put('/update_stock', jwtSaleandMarketing, async (req, res) => {
         throw new JWTisnotValid();
     }
 
-    const product = await ProductModel.findById(id);
+    const product = await ProductModel.findOne({barcodeNumber: barcode});
 
     if(!product){
         throw new BadRequestError('Product can not found!');
@@ -114,12 +116,11 @@ router.put('/update_stock', jwtSaleandMarketing, async (req, res) => {
         throw new BadRequestError('Product number can not be negative number');
     }
 
-    if(`${product._id}` != user.companyId){
+    if(product.companyID != user.companyId){
         throw new NotFoundError();
     }
 
-    product.update(id, {number: number});
-    product.save();
+    await product.updateOne({number: number});
 
     res.status(200).json(product);
 });

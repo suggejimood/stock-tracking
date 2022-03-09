@@ -1,14 +1,16 @@
-import express from 'express';
+import express, { Response, Request } from 'express';
 import jwt from 'jsonwebtoken';
 import { User, UserModel } from '../models/user_model';
 import { NotFoundError } from '../errors/not_found_error';
 import { CompanyModel } from '../models/company_model';
 import { AlreadyExistError } from '../errors/already_exist_error';
 import { FinanceModel } from '../models/finance_model';
+import { validateLogin, validateNewRegister } from '../middlewares/validation_middleware';
+import { validateRequest } from '../middlewares/validate_request';
 
 const router = express.Router();
 
-router.post('/login', async (req, res)=>{
+router.post('/login', validateLogin(), validateRequest, async (req: Request, res: Response)=>{
     const { email, password } = req.body;
 
     const user = await UserModel.findOne({email});
@@ -31,14 +33,14 @@ router.post('/login', async (req, res)=>{
     res.status(200).json({msg: true});
 });
 
-router.get('/logout', (req, res) => {
+router.get('/logout', (req: Request, res: Response) => {
     const token = '';
 
-    res.header('token', token);
+    res.cookie('access-cookie', token);
     res.status(200).json({msg: true})
 });
 
-router.post('/register', async (req, res) => {
+router.post('/register', validateNewRegister(), validateRequest, async (req: Request, res: Response) => {
     const { name, surname, email, password, companyName, } = req.body;
 
     const existingEmail = await UserModel.findOne({email});
