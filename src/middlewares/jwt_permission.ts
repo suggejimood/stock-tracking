@@ -29,7 +29,7 @@ const jwtSaleandMarketing = async (req: Request, res: Response, next: NextFuncti
         throw new UnauthorizedError();
     }
 
-    if(user.department != 1 as Number || user.department != 0 as Number){
+    if(!(user.department == 1 as Number || user.department == 0 as Number)){
         throw new BadRequestError("You dont have permision");
     }
 
@@ -45,7 +45,7 @@ const jwtAccountant = async (req: Request, res: Response, next: NextFunction) =>
         throw new UnauthorizedError();
     }
 
-    if(user.department != 2 as Number || user.department != 0 as Number){
+    if(!(user.department == 2 as Number || user.department == 0 as Number)){
         throw new BadRequestError("You dont have permision");
     }
 

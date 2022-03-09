@@ -36,7 +36,7 @@ router.get('/total_money', jwtAccountant, async (req, res) => {
 
 router.post('/sell/:id', jwtSaleandMarketing, async (req, res) => {
     const userId = await jwtID(req);
-    const id = req.params.id;
+    const barcode = req.params.id;
     const { number } = req.body;
 
     const user = await UserModel.findById(userId);
@@ -51,7 +51,7 @@ router.post('/sell/:id', jwtSaleandMarketing, async (req, res) => {
         throw new BadRequestError('Company can not found');
     }
 
-    const product = await ProductModel.findById(id);
+    const product = await ProductModel.findOne({barcodeNumber: barcode});
 
     if(!product){
         throw new BadRequestError('Product can not found');
@@ -61,7 +61,7 @@ router.post('/sell/:id', jwtSaleandMarketing, async (req, res) => {
     let flag: boolean = false;
 
     productList.forEach(value => {
-        if(value.id == id){
+        if(value.barcodeNumber == barcode){
             flag = true;
         }
     });

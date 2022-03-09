@@ -4,9 +4,7 @@ import { JWTisnotValid } from '../errors/jwt_isNotValid_error';
 import { UnauthorizedError } from '../errors/unauthorized_error';
 
 async function jwtID(req: Request){
-    const token = req.headers['token'] || req.body.token || req.query.token;
-
-    console.log(token);
+    const token = req.cookies['access-cookie'];
 
     if(!token){
         throw new UnauthorizedError();
@@ -17,7 +15,7 @@ async function jwtID(req: Request){
     if(!decode){
         throw new JWTisnotValid();
     }
-    console.log( "bu ne: " + decode)
+
     const { id } = decode;
 
     return id;

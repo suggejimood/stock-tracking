@@ -23,10 +23,10 @@ const companySchema = new Schema<CompanyDoc>({
         }
     }],
     products: [{
-        id:{
+        barcodeNumber:{
             type: String
         },
-        email: {
+        name: {
             type: String
         }
     }]

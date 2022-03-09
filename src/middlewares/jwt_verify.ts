@@ -4,7 +4,7 @@ import { JWTisnotValid } from '../errors/jwt_isNotValid_error';
 import { UnauthorizedError } from '../errors/unauthorized_error';
 
 const verify = async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.headers['token'] || req.body.token;
+    const token = req.cookies['access-cookie'];
 
     if(!token){
         throw new UnauthorizedError();
@@ -18,7 +18,7 @@ const verify = async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const newToken = jwt.sign({id}, `${process.env.KEY}`, {expiresIn: '1d'});
-    res.header('token', newToken);
+    res.cookie('access-cookie', newToken, {secure: false});
 
     next();
 };

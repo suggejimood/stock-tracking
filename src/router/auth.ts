@@ -27,7 +27,7 @@ router.post('/login', async (req, res)=>{
 
     const token = await jwt.sign(prd, `${process.env.KEY}`, {expiresIn: '1d'});
 
-    res.header('token', token);
+    res.cookie('access-cookie', token, {secure: false});
     res.status(200).json({msg: true});
 });
 

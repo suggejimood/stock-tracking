@@ -1,11 +1,11 @@
 import { Schema, model } from "mongoose";
 
 class Product{
-    public id: string;
+    public barcodeNumber: string;
     public name: string;
 
-    constructor(id: string, name: string){
-        this.id = id;
+    constructor(barcodeNumber: string, name: string){
+        this.barcodeNumber = barcodeNumber;
         this.name = name;
     }
 }

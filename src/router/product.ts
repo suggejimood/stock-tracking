@@ -3,24 +3,26 @@ import { AlreadyExistError } from '../errors/already_exist_error';
 import { BadRequestError } from '../errors/bad_request_error';
 import { JWTisnotValid } from '../errors/jwt_isNotValid_error';
 import { NotFoundError } from '../errors/not_found_error';
+import { UnauthorizedError } from '../errors/unauthorized_error';
 import { jwtSaleandMarketing } from '../middlewares/jwt_permission';
-import { ProductModel } from '../models/product_model';
+import { CompanyModel } from '../models/company_model';
+import { Product, ProductModel } from '../models/product_model';
 import { UserModel } from '../models/user_model';
 import { jwtID } from '../services/jwt_parser';
 
 const router = express.Router();
 
 router.post('/add_new_product', jwtSaleandMarketing, async (req, res) => {
-    const { name, number, barcodeNumber, buyingPrice, saleingPrice, moneyType } = req.body;
+    const { name, number, barcodeNumber, buyingPrice, saleingPrice } = req.body;
     
-    const id = jwtID(req);
+    const id = await jwtID(req);
     const user = await UserModel.findById(id);
 
     if(!user){
         throw new JWTisnotValid();
     }
 
-    const existingBarcode = await ProductModel.findOne(barcodeNumber);
+    const existingBarcode = await ProductModel.findOne({barcodeNumber});
 
     if(existingBarcode){
         throw new AlreadyExistError('This barcode number has already taken!');
@@ -33,13 +35,63 @@ router.post('/add_new_product', jwtSaleandMarketing, async (req, res) => {
         barcodeNumber,
         buyingPrice,
         saleingPrice,
-        moneyType,
     };
 
     const product = await new ProductModel(newProduct);
     await product.save();
 
-    res.status(200).json({msg: true});
+    const company = await CompanyModel.findById(user.companyId);
+    
+    if(!company){
+        throw new BadRequestError('Company can not found');
+    }
+
+    let productList = company.products;
+    let addNewProduct = await new Product(product.barcodeNumber, product.name)
+    productList.push(addNewProduct);
+
+    await company.updateOne({products: productList});
+
+    res.status(200).json(product);
+});
+
+router.delete('/delete_product', jwtSaleandMarketing, async (req, res) => {
+    const { barcodeNumber } = req.body;
+    const id = await jwtID(req);
+
+    if(!id){
+        throw new JWTisnotValid();
+    }
+
+    const deletedProduct = await ProductModel.findOneAndDelete({barcodeNumber: barcodeNumber});
+
+    if(!deletedProduct){
+        throw new BadRequestError('Product can not found or deleted');
+    }
+
+    const user = await UserModel.findById(id);
+
+    if(!user){
+        throw new UnauthorizedError();
+    }
+
+    const company = await CompanyModel.findById(user.companyId);
+
+    if(!company){
+        throw new BadRequestError('Company can not found');
+    }
+
+    let productList: any = [];
+
+    company.products.forEach(product => {
+        if(product.barcodeNumber != barcodeNumber){
+            productList.push(product)
+        }
+    });
+
+    await company.updateOne({products: productList});
+
+    res.status(200).json({msg: "true"});
 });
 
 router.put('/update_stock', jwtSaleandMarketing, async (req, res) => {

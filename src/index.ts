@@ -6,6 +6,7 @@ import { verify } from './middlewares/jwt_verify';
 import { NotFoundError } from './errors/not_found_error';
 import { errorHandler } from './middlewares/error_handler';
 import { connectDB } from "./config/database/database";
+import cookieParser from 'cookie-parser';
 
 //Router
 import { userRouter } from './router/user';
@@ -15,6 +16,7 @@ import { financeRouter } from './router/finance';
 
 const app = express();
 app.use(express.json());
+app.use(cookieParser());
 app.use(helmet());
 dotenv.config();
 
